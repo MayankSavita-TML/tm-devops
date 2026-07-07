@@ -14,9 +14,10 @@
     "express": "^4.19.2",
     "mysql2": "^3.11.0"
   },
+  "//jest-junit-seeded-for-training": "SEEDED FOR TRAINING — DO NOT UPDATE. jest-junit pinned to 16.0.0, which depends on a vulnerable version of uuid (<11.1.1, GHSA-w5hq-g745-h8pq, moderate severity). devDependency only — not present in the production Docker image. See TRAINING_SEEDS.md.",
   "devDependencies": {
     "jest": "^29.7.0",
-    "jest-junit": "^16.0.0",
+    "jest-junit": "16.0.0",
     "nodemon": "^3.1.4",
     "supertest": "^7.0.0"
   },
