@@ -1,37 +1,3 @@
-# Single-replica MySQL for local dev/training use only. No replication, no
-# backups, no StatefulSet — a Deployment + single PVC is enough to give
-# OrderFlow-Lite somewhere to persist data across pod restarts on a laptop
-# cluster. Do not use this as a template for a production database.
-#
-# NOTE ON LABELS: this MySQL Deployment/Pods are labeled `app: mysql`,
-# deliberately distinct from the OrderFlow-Lite app's `app: orderflow-lite`
-# label (see deployment.yaml/service.yaml). If these labels ever collided,
-# the app's NodePort Service could accidentally load-balance traffic across
-# MySQL pods too — keep them namespaced apart.
-
-# ---------------------------------------------------------------------------
-# Schema bootstrap: mount sql/init.sql into /docker-entrypoint-initdb.d/.
-# The official mysql image auto-runs any *.sql (or *.sh) file found there,
-# in filename order, the FIRST time the container starts with an empty data
-# directory (i.e. an empty PVC).
-#
-# Tradeoff vs. applying sql/init.sql manually (`mysql -h ... < sql/init.sql`
-# or a one-off Job/kubectl exec after the pod is up):
-#   + Zero manual steps — `kubectl apply -f k8s/` alone gets you a ready
-#     schema, which is exactly what you want for a repeatable training lab.
-#   + Schema lives in version control next to the app, and this ConfigMap is
-#     just sql/init.sql copied verbatim, so it's easy to audit that they
-#     match.
-#   - This ConfigMap is a hand-copied duplicate of sql/init.sql, not a
-#     generated one — if you edit sql/init.sql you MUST update this
-#     ConfigMap too, or they will silently drift.
-#   - It ONLY runs once, against an empty data directory. If the PVC already
-#     has data (e.g. you `kubectl apply`'d before fixing a typo in the SQL),
-#     editing this ConfigMap and re-applying does NOT re-run it — you'd need
-#     to delete the PVC (destroying all data) or run future schema changes
-#     as real migrations instead of relying on initdb scripts.
-#   - Not a substitute for a real migration tool once this app is more than
-#     a training toy (e.g. Flyway, node-pg-migrate equivalents, etc).
 apiVersion: v1
 kind: ConfigMap
 metadata:
