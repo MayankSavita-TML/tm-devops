@@ -14,7 +14,7 @@ app.use(express.json());
 // touch the database — a slow/down DB should not cause Kubernetes to kill
 // and restart this pod, only /ready should reflect that.
 app.get("/health", (req, res) => {
-  res.status(200).json({ status: "ok" });
+  res.status(200).json({ status: "ok", message: "app is alive" });
 });
 
 // Readiness probe: checks the app can actually talk to the database before
