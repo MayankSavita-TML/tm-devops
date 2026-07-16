@@ -1,9 +1,7 @@
 name: OrderFlow-Lite CI/CD
 
 on:
-  push:
-    branches:
-      - main
+  workflow_dispatch:
 
 env:
   IMAGE_NAME: orderflow-lite
@@ -34,7 +32,7 @@ jobs:
         working-directory: orderflow-lite
         run: npm run test:ci
 
-      - name: Upload JUnit Test Results
+      - name: Upload JUnit Results
         if: always()
         uses: actions/upload-artifact@v4
         with:
@@ -52,18 +50,17 @@ jobs:
             -t ${REGISTRY}/${IMAGE_NAME}:latest \
             .
 
-      - name: Push Docker Images
-        if: github.ref == 'refs/heads/main'
+      - name: Push Docker Image
         run: |
           docker push ${REGISTRY}/${IMAGE_NAME}:${IMAGE_TAG}
           docker push ${REGISTRY}/${IMAGE_NAME}:latest
 
-      - name: Build Success
+      - name: Success Message
         if: success()
         run: |
           echo "Pushed ${REGISTRY}/${IMAGE_NAME}:${IMAGE_TAG} (and :latest) - build #${GITHUB_RUN_NUMBER}"
 
-      - name: Build Failure
+      - name: Failure Message
         if: failure()
         run: |
           echo "OrderFlow-Lite build #${GITHUB_RUN_NUMBER} failed"
